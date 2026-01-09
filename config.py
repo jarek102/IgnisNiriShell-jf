@@ -42,8 +42,8 @@ for idx in range(get_n_monitors()):
     AppDock(idx)
     OverlayBackdrop(idx)
 
-    WallpaperWindow(idx)
-    if niri.is_available:
-        WallpaperWindow(idx, is_backdrop=True)
+#    WallpaperWindow(idx)
+#    if niri.is_available:
+#        WallpaperWindow(idx, is_backdrop=True)
 
 post_initialized()

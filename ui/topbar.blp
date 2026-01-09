@@ -21,17 +21,19 @@ template $TopbarView: CenterBox {
         }
 
         $NiriWorkspaces {}
+
+        $NiriActiveWindow {}
     }
 
     [center]
     Box {
-        $NiriActiveWindow {}
+        $IgnisClock {}
+
+        $IgnisTray {}
     }
 
     [end]
     Box {
-        $IgnisTray {}
-
         $IgnisFcitxIndicator {}
 
         $CpuUsagePill {
@@ -71,11 +73,7 @@ template $TopbarView: CenterBox {
 
         $IgnisRecorderIndicator {}
 
-        $IgnisAudio {}
-
         $IgnisNetwork {}
-
-        $IgnisClock {}
 
         $IgnisBatteries {}
     }
