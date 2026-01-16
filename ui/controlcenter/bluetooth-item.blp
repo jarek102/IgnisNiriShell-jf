@@ -1,0 +1,34 @@
+using Gtk 4.0;
+
+template $BluetoothDeviceItem: ListBoxRow {
+    selectable: false;
+    focusable: false;
+
+    styles [
+        "rounded",
+        "transition",
+    ]
+
+    Box {
+        Image icon {
+            icon-name: "bluetooth-symbolic";
+
+            styles [
+                "card-bg",
+                "p-2",
+                "rounded",
+                "transition",
+            ]
+        }
+
+        Inscription inscription {
+            hexpand: true;
+            valign: center;
+            text-overflow: ellipsize_end;
+
+            styles [
+                "caption",
+            ]
+        }
+    }
+}

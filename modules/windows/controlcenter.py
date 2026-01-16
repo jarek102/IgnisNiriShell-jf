@@ -295,6 +295,122 @@ class BacklightControlGroup(Gtk.ListBox):
         for device in self.__service.devices:
             self.__list.append(self.Item(device))
 
+@gtk_template("controlcenter/bluetooth-group")
+class BluetoothControlGroup(Gtk.Box):
+    __gtype_name__ = "BluetoothControlGroup"
+
+    icon: Gtk.Image = gtk_template_child()
+    title: Gtk.Label = gtk_template_child()
+    subtitle: Gtk.Label = gtk_template_child()
+    favorites: Gtk.Box = gtk_template_child()
+    caption: Gtk.Box = gtk_template_child()
+    arrow: Gtk.Image = gtk_template_child()
+    revealer: Gtk.Revealer = gtk_template_child()
+    list_box: Gtk.ListBox = gtk_template_child()
+
+    @gtk_template("controlcenter/bluetooth-item")
+    class BluetoothDeviceItem(Gtk.ListBoxRow, SpecsBase):
+        __gtype_name__ = "BluetoothDeviceItem"
+
+        icon: Gtk.Image = gtk_template_child()
+        inscription: Gtk.Inscription = gtk_template_child()
+
+        def __init__(self, device: BluetoothDevice):
+            self._device = device
+            super().__init__()
+            SpecsBase.__init__(self)
+
+            set_on_click(self, left=self.__on_clicked)
+            self.signal(device, "notify::connected", self.__on_device_changed)
+            self.signal(device, "notify::alias", self.__on_device_changed)
+            self.signal(device, "notify::icon-name", self.__on_device_changed)
+            self.__on_device_changed()
+
+        def do_dispose(self):
+            self.clear_specs()
+            self.dispose_template(self.__class__)
+            super().do_dispose()  # type: ignore
+
+        def __on_device_changed(self, *_):
+            name = getattr(self._device, "alias", None) or getattr(self._device, "name", None) or ""
+            icon = getattr(self._device, "icon_name", None) or "bluetooth-symbolic"
+            self.inscription.set_text(name)
+            self.inscription.set_tooltip_text(name)
+            self.icon.set_from_icon_name(icon)
+            if getattr(self._device, "connected", False):
+                self.icon.add_css_class("accent")
+            else:
+                self.icon.remove_css_class("accent")
+
+        def __on_clicked(self, *_):
+            # toggle connection if property is writable; ignore errors otherwise
+            try:
+                self._device.connected = not getattr(self._device, "connected", False)
+            except Exception:
+                pass
+
+    def __init__(self):
+        self.__service = BluetoothService.get_default()
+        super().__init__()
+
+        self.title.set_text("Bluetooth")
+
+        # list store bound to template ListBox inside the Revealer
+        self.__list = Gio.ListStore()
+        self.list_box.bind_model(self.__list, lambda i: i)
+
+        set_on_click(self.caption, left=self.__on_caption_clicked)
+        set_on_click(self.icon, WeakMethod(self.__on_clicked))
+        connect_window(self, "notify::visible", self.__on_window_visible_change)
+
+        self.__service.connect("notify::state", self.__on_status_changed)
+        self.__service.connect("notify::devices", self.__on_devices_changed)
+        self.__on_devices_changed()
+
+    def __on_window_visible_change(self, window: Window, _):
+        if not window.get_visible():
+            self.revealer.set_reveal_child(False)
+
+    def __on_devices_changed(self, *_):
+        # dispose and rebuild device rows
+        items = list(self.__list)
+        self.__list.remove_all()
+        for item in items:
+            if isinstance(item, self.BluetoothDeviceItem):
+                item.run_dispose()
+
+        for device in self.__service.devices:
+            self.__list.append(self.BluetoothDeviceItem(device))
+
+    def __on_caption_clicked(self, *_):
+        revealed = not self.revealer.get_reveal_child()
+        self.revealer.set_reveal_child(revealed)
+        if revealed:
+            self.arrow.add_css_class("rotate-icon-90")
+        else:
+            self.arrow.remove_css_class("rotate-icon-90")
+
+    def __on_status_changed(self, *_):
+        # update caption/subtitle/icon based on service state (kept minimal)
+        if not self.__service.powered:
+            self.subtitle.set_text("disabled")
+            self.icon.set_from_icon_name("bluetooth-disabled-symbolic")
+            return
+        devices = [d for d in self.__service.devices if getattr(d, "connected", False)]
+        match len(devices):
+            case 0:
+                self.subtitle.set_text("disconnected")
+                self.icon.set_from_icon_name("bluetooth-disconnected-symbolic")
+            case 1:
+                alias = devices[0].alias
+                self.subtitle.set_text(alias)
+                self.icon.set_from_icon_name(devices[0].icon_name)
+                self.set_tooltip_text(alias)
+            case _:
+                self.subtitle.set_text(f"{len(devices)} devices")
+
+    def __on_clicked(self, *_):
+        self.__service.powered = not self.__service.powered
 
 class ControlSwitchPill(Gtk.Button):
     __gtype_name__ = "ControlSwitchPill"

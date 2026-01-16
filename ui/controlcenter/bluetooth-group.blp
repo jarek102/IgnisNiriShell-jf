@@ -1,0 +1,91 @@
+using Gtk 4.0;
+
+template $BluetoothControlGroup:Box {
+    orientation: vertical;
+
+    styles [
+        "card",
+        "m-1",
+        "rounded",
+    ]
+
+    Box caption {
+        styles [
+            "card-bg",
+            "p-1",
+            "rounded",
+            "transition",
+        ]
+
+        Image icon {
+            icon-name: "bluetooth-symbolic";
+
+            styles [
+                "card-bg",
+                "p-2",
+                "rounded",
+                "transition",
+            ]
+        }
+
+        Box {
+            valign: center;
+            orientation: vertical;
+
+            Inscription title {
+                text: "";
+                halign: fill;
+                text-overflow: ellipsize_end;
+
+                styles [
+                    "caption-heading",
+                ]
+            }
+
+            Inscription subtitle {
+                text: "enabled";
+                halign: fill;
+                text-overflow: ellipsize_end;
+
+                styles [
+                    "caption",
+                    "dimmed",
+                ]
+            }
+
+            styles [
+                "mx-4",
+                "w-24",
+            ]
+        }
+
+        Box favorites {
+            hexpand: true;
+
+            styles [
+                "mx-1",
+                "linked",
+            ]
+        }
+
+        Image arrow {
+            icon-name: "pan-end-symbolic";
+
+            styles [
+                "p-2",
+                "rounded",
+                "transition",
+            ]
+        }
+    }
+
+    Revealer revealer {
+        ListBox list_box {
+            selection-mode: none;
+
+            styles [
+                "transparent",
+            ]
+        }
+    }
+}
