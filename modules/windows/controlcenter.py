@@ -357,6 +357,7 @@ class BluetoothControlGroup(Gtk.Box):
 
         # list store bound to template ListBox inside the Revealer
         self.__list = Gio.ListStore()
+        self.__devices_signals: list[tuple[BluetoothDevice, int]] = []
         self.list_box.bind_model(self.__list, lambda i: i)
 
         set_on_click(self.caption, left=self.__on_caption_clicked)
@@ -372,6 +373,14 @@ class BluetoothControlGroup(Gtk.Box):
             self.revealer.set_reveal_child(False)
 
     def __on_devices_changed(self, *_):
+        # disconnect old device signals
+        for device, handler_id in self.__devices_signals:
+            try:
+                device.disconnect(handler_id)
+            except Exception:
+                pass
+        self.__devices_signals.clear()
+
         # dispose and rebuild device rows
         items = list(self.__list)
         self.__list.remove_all()
@@ -379,8 +388,14 @@ class BluetoothControlGroup(Gtk.Box):
             if isinstance(item, self.BluetoothDeviceItem):
                 item.run_dispose()
 
+        # add new devices + connect signals
         for device in self.__service.devices:
+            handler_id = device.connect("notify::connected", self.__on_status_changed)
+            self.__devices_signals.append((device, handler_id))
             self.__list.append(self.BluetoothDeviceItem(device))
+
+        # force UI refresh
+        self.__on_status_changed()
 
     def __on_caption_clicked(self, *_):
         revealed = not self.revealer.get_reveal_child()
