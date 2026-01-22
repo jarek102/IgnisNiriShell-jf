@@ -17,7 +17,6 @@ from modules.windows import (
     Preferences,
     Topbar,
     WallpaperWindow,
-    TitleSetter,
 )
 
 app = IgnisApp.get_initialized()
@@ -37,7 +36,6 @@ FcitxKimPopup()
 NotificationPopups()
 OnscreenDisplay()
 Preferences()
-TitleSetter()
 
 for idx in range(get_n_monitors()):
     Topbar(idx)
