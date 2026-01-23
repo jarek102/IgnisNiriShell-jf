@@ -16,6 +16,7 @@ class WindowName(Enum):
     preferences = "ignis-preferences"
     backdrop = "ignis-backdrop"
     osd = "ignis-osd"
+    title_setter = "ignis-titlesetter"
 
 
 class AudioStreamType(Enum):

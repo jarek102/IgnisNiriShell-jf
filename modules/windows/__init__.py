@@ -8,6 +8,7 @@ from .osd import OnscreenDisplay
 from .preferences import Preferences
 from .topbar import Topbar
 from .wallpaper import WallpaperWindow
+from .titlesetter import TitleSetter
 
 __all__ = [
     AppDock,
@@ -20,5 +21,6 @@ __all__ = [
     Preferences,
     Topbar,
     WallpaperWindow,
+    TitleSetter,
     WindowName,
 ]

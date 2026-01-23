@@ -1,0 +1,44 @@
+using Gtk 4.0;
+
+template $TitleSetterView : Box {
+  orientation: vertical;
+  spacing: 12;
+  margin-top: 24;
+  margin-bottom: 24;
+  margin-start: 24;
+  margin-end: 24;
+
+  Label window_details_label {
+    label: "Focus a window, then press Mod+S";
+    wrap: true;
+    halign: start;
+  }
+
+  Box {
+    orientation: horizontal;
+    spacing: 8;
+
+    Entry title_entry {
+      placeholder-text: "Enter Session Title...";
+      hexpand: true;
+    }
+
+    Button magic_button {
+      label: "✨";
+      tooltip-text: "Auto-name from Browser Tabs";
+      css-classes: ["suggested-action"];
+      clicked => $on_magic_button_clicked();
+    }
+  }
+
+  Button save_button {
+    label: "Save Rule";
+    css-classes: ["suggested-action", "pill"];
+    clicked => $on_save_button_clicked();
+  }
+
+  Label status_label {
+    label: "";
+    halign: center;
+  }
+}
