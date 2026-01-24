@@ -42,10 +42,68 @@ template $TitleSetterView : Box {
         }
       }
 
-      Button save_button {
-        label: "Save Rule";
-        css-classes: ["suggested-action", "pill"];
-        clicked => $on_save_button_clicked();
+      Box {
+        orientation: horizontal;
+        spacing: 12;
+        halign: center;
+        CheckButton open_floating {
+          label: "Floating";
+        }
+        CheckButton open_fullscreen {
+          label: "Fullscreen";
+        }
+        CheckButton open_maximized {
+          label: "Maximized";
+        }
+      }
+
+      Box {
+        orientation: horizontal;
+        spacing: 12;
+        halign: center;
+
+        CheckButton block_screencast {
+          label: "Block Screencast";
+        }
+        CheckButton block_capture {
+          label: "Block Capture";
+        }
+      }
+
+      Box {
+        orientation: horizontal;
+        spacing: 8;
+        halign: fill;
+        margin-start: 24;
+        margin-end: 24;
+
+        ComboBoxText monitor_combo {
+          hexpand: true;
+          tooltip-text: "Select Monitor";
+        }
+
+        ComboBoxText workspace_combo {
+          hexpand: true;
+          tooltip-text: "Select Workspace";
+        }
+      }
+
+      Box {
+        orientation: horizontal;
+        spacing: 8;
+        halign: center;
+
+        Button save_button {
+          label: "Save Rule";
+          css-classes: ["suggested-action", "pill"];
+          clicked => $on_save_button_clicked();
+        }
+
+        Button delete_button {
+          label: "Delete Rule";
+          css-classes: ["destructive-action", "pill"];
+          clicked => $on_delete_button_clicked();
+        }
       }
 
       Label status_label {
